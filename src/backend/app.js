@@ -11,7 +11,7 @@ app.use(express.json());
 //Ruta de prueba
 app.get("/api/testdb", async (req, res) => {
   try {
-    const [rows] = await database.query("SELECT 1 + 1 AS result");
+    const { rows } = await database.query("SELECT 1 + 1 AS result");
     res.json({
       status: "success",
       message: "Conexión a la base de datos exitosa",

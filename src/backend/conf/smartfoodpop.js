@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise";
+import pg from "pg";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -10,22 +10,21 @@ const __dirname = dirname(__filename);
 //// Cargar variables de entorno desde .env
 dotenv.config({ path: join(__dirname, "..", "..", "..", ".env"), quiet: true });
 
-// Crear un pool de conexiones usando la interfaz promise
+const { Pool } = pg;
 
-const database = mysql.createPool({
+const database = new Pool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+  port: Number(process.env.DB_PORT || 5432),
+  max: 10,
 });
 
 // Probar la conexión a la base de datos
 const testConnection = async () => {
   try {
-    const connection = await database.getConnection();
+    const connection = await database.connect();
     console.log("Conexión a la base de datos establecida correctamente");
     connection.release();
   } catch (error) {
